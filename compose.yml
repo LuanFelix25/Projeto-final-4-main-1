@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  app:
+    image: node:14
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+    command: npm start
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./public:/usr/share/nginx/html
+    depends_on:
+      - app
+
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  app-data:

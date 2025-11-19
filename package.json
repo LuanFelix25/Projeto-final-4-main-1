@@ -1,0 +1,20 @@
+{
+  "name": "Projeto-final-4",
+  "version": "1.0.0",
+  "description": "A Vue.js project for demonstration purposes.",
+  "main": "src/main.js",
+  "scripts": {
+    "serve": "vite",
+    "build": "vite build",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "vue": "^3.0.0"
+  },
+  "devDependencies": {
+    "vite": "^2.0.0",
+    "eslint": "^7.0.0"
+  },
+  "author": "Your Name",
+  "license": "MIT"
+}
