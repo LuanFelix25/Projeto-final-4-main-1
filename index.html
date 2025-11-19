@@ -1,13 +1,276 @@
-<!DOCTYPE html>
-<html lang="en">
+!DOCTYPE html>
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Project Title</title>
-    <link rel="stylesheet" href="src/assets/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sistema de Gerenciamento de Tarefas</title>
+  <link rel="stylesheet" href="estiloGlobais.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+   <script src="main.js"></script>
+  <style>
+    .index-menu {
+      background: var(--surface, #2d3748);
+      padding: 2rem;
+      border-radius: 1rem;
+      max-width: 600px;
+      margin: 3rem auto;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.10);
+      text-align: center;
+    }
+    .index-menu h1 { font-size: 2.2rem; margin-bottom: 1.5rem; }
+    .index-menu ul { list-style: none; padding: 0; margin: 2rem 0; }
+    .index-menu li { margin: 1rem 0; }
+    .index-menu a {
+      display: inline-block;
+      padding: 0.75rem 2rem;
+      border-radius: 0.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      background: var(--primary, #48bb78);
+      color: var(--background, #1a202c);
+      text-decoration: none;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+    .index-menu a:hover { background: var(--primary-hover, #38a169); color: #fff; }
+    .index-menu .desc { color: var(--text-secondary, #a0aec0); font-size: 1rem; margin-bottom: 2rem; }
+    .file-link { background: var(--secondary, #4299e1) !important; color: #fff !important; }
+    .file-link:hover { background: var(--secondary-hover, #3182ce) !important; }
+    #app { padding: 2rem; }
+
+    /* notification */
+    .toast {
+      position: fixed;
+      right: 20px;
+      top: 20px;
+      z-index: 2000;
+      padding: 12px 18px;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 6px 22px rgba(0,0,0,0.15);
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity .25s, transform .25s;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { background: #28a745; }
+    .toast.error { background: #e53e3e; }
+    .toast.info { background: #17a2b8; }
+  </style>
 </head>
 <body>
-    <div id="app"></div>
-    <script src="src/main.js"></script>
+  <!-- Menu Inicial -->
+  <div id="menu" class="index-menu">
+    <h1>Sistema de Gerenciamento de Tarefas</h1>
+    <div class="desc">
+      Bem-vindo! Escolha uma das páginas do sistema para navegar ou testar.<br>
+      <strong>Dica:</strong> Use os botões abaixo para acessar cada funcionalidade.
+    </div>
+    <ul>
+      <li><a onclick="showPage('login')">Login</a></li>
+      <li><a onclick="showPage('cadastro')">Cadastro</a></li>
+      <li><a onclick="showPage('dashboard')">Dashboard</a></li>
+      <li><a onclick="showPage('criar-tarefa')">Criar Tarefa</a></li>
+      <li><a onclick="showPage('tarefa-criada')">Tarefa Criada (Feedback)</a></li>
+      <li><a onclick="showPage('editar-tarefa')">Editar Tarefa</a></li>
+      <li><a onclick="showPage('detalhes-tarefa')">Detalhes da Tarefa</a></li>
+      <li><a onclick="showPage('confirmar-exclusao')">Confirmar Exclusão</a></li>
+    </ul>
+    <footer class="site-footer">
+      <p>&copy; 2025 Projeto Acadêmico</p>
+    </footer>
+  </div>
+
+  <!-- Área de renderização -->
+  <main id="app"></main>
+
+  <!-- Toasts -->
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <!-- Templates escondidos -->
+  <!-- LOGIN -->
+  <template id="login">
+    <div class="auth-container">
+      <header class="auth-header"><h1>Sistema de Gerenciamento de Tarefas</h1></header>
+      <main>
+        <div class="auth-card">
+          <h2>Bem-vindo de volta!</h2>
+          <form id="loginForm">
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" name="email" class="form-control" value="usuario@exemplo.com" required>
+            </div>
+            <div class="form-group">
+              <label>Senha</label>
+              <input type="password" name="senha" class="form-control" value="123456" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Entrar</button>
+          </form>
+          <div class="auth-footer-link"><p>Não tem uma conta? <a onclick="showPage('cadastro')">Cadastre-se</a></p></div>
+        </div>
+      </main>
+    </div>
+  </template>
+
+  <!-- CADASTRO -->
+  <template id="cadastro">
+    <div class="auth-container">
+      <header class="auth-header"><h1>Sistema de Gerenciamento de Tarefas</h1></header>
+      <main>
+        <div class="auth-card">
+          <h2>Criar sua conta</h2>
+          <form id="cadastroForm">
+            <div class="form-group"><label>Nome completo</label><input type="text" name="nome" class="form-control" required></div>
+            <div class="form-group"><label>Email</label><input type="email" name="email" class="form-control" required></div>
+            <div class="form-group"><label>Senha</label><input type="password" name="senha" class="form-control" minlength="8" required></div>
+            <div class="form-group"><label>Confirmar senha</label><input type="password" name="confirmar" class="form-control" minlength="8" required></div>
+            <button type="submit" class="btn btn-primary">Criar conta</button>
+          </form>
+          <div class="auth-footer-link"><p>Já tem uma conta? <a onclick="showPage('login')">Fazer login</a></p></div>
+        </div>
+      </main>
+    </div>
+  </template>
+
+  <!-- DASHBOARD -->
+  <template id="dashboard">
+    <div class="app-layout">
+      <aside class="sidebar">
+        <header class="sidebar-header"><h2>Dashboard</h2></header>
+        <nav class="sidebar-nav">
+          <ul>
+            <li><a onclick="showPage('dashboard')" class="active">📋 Minhas Tarefas</a></li>
+            <li><a onclick="showPage('criar-tarefa')">➕ Criar Tarefa</a></li>
+            <li><a onclick="alert('Configurações em desenvolvimento')">⚙️ Configurações</a></li>
+            <li><a onclick="logout()" >🚪 Sair</a></li>
+          </ul>
+        </nav>
+      </aside>
+      <main class="main-content">
+        <header class="main-header">
+          <h1>📋 Minhas Tarefas</h1>
+          <a onclick="showPage('criar-tarefa')" class="btn btn-primary" style="width: auto;">➕ Nova Tarefa</a>
+        </header>
+
+        <div class="task-counter">
+            <span class="counter-number">0</span>
+            <span>Tarefas Ativas</span>
+        </div>
+
+        <div class="status-filters">
+            <a href="#" class="filter-btn active">🔄 Todas</a>
+            <a href="#" class="filter-btn">🔴 Pendentes</a>
+            <a href="#" class="filter-btn">🟡 Em Andamento</a>
+            <a href="#" class="filter-btn">🟢 Concluídas</a>
+        </div>
+
+        <section class="tasks-grid" id="tasksGrid">
+          <!-- cards serão injetados por JS -->
+        </section>
+      </main>
+    </div>
+  </template>
+
+  <!-- CRIAR TAREFA -->
+  <template id="criar-tarefa">
+    <div class="app-layout">
+      <aside class="sidebar"><header class="sidebar-header"><h2>Dashboard</h2></header></aside>
+      <main class="main-content">
+        <header class="main-header"><h1>Criar Nova Tarefa</h1></header>
+        <section class="task-details-card">
+          <form id="criarTarefaForm">
+            <div class="form-group"><label>Título</label><input type="text" name="titulo" class="form-control" required></div>
+            <div class="form-group"><label>Descrição</label><textarea name="descricao" class="form-control"></textarea></div>
+            <div class="form-group"><label>Status</label>
+              <select name="status" class="form-control">
+                <option value="pendente" selected>Pendente</option>
+                <option value="em_andamento">Em Andamento</option>
+                <option value="concluida">Concluída</option>
+              </select>
+            </div>
+            <div class="task-actions">
+              <button type="submit" class="btn btn-primary">Salvar</button>
+              <a onclick="showPage('dashboard')" class="btn btn-secondary">Cancelar</a>
+            </div>
+          </form>
+        </section>
+      </main>
+    </div>
+  </template>
+
+  <!-- EDITAR TAREFA -->
+  <template id="editar-tarefa">
+    <div class="app-layout">
+      <main class="main-content">
+        <header class="main-header"><h1>Editar Tarefa</h1></header>
+        <section class="task-details-card">
+          <form id="editarTarefaForm">
+            <div class="form-group"><label>Título</label><input type="text" name="titulo" class="form-control" required></div>
+            <div class="form-group"><label>Descrição</label><textarea name="descricao" class="form-control"></textarea></div>
+            <div class="form-group"><label>Status</label>
+              <select name="status" class="form-control">
+                <option value="pendente">Pendente</option>
+                <option value="em_andamento">Em Andamento</option>
+                <option value="concluida">Concluída</option>
+              </select>
+            </div>
+            <div class="task-actions">
+              <button type="submit" class="btn btn-primary">Salvar</button>
+              <a onclick="showPage('dashboard')" class="btn btn-secondary">Cancelar</a>
+              <a id="btn-delete" class="btn btn-danger">Excluir</a>
+            </div>
+          </form>
+        </section>
+      </main>
+    </div>
+  </template>
+
+  <!-- DETALHES TAREFA -->
+  <template id="detalhes-tarefa">
+    <div class="app-layout">
+      <main class="main-content">
+        <header class="main-header"><h1>Detalhes da Tarefa</h1></header>
+        <section class="task-details-card" id="detalhesContainer">
+          <!-- preenchido por JS -->
+        </section>
+      </main>
+    </div>
+  </template>
+
+  <!-- CONFIRMAR EXCLUSÃO -->
+  <template id="confirmar-exclusao">
+    <div class="confirmacao-modal">
+      <div class="modal-content">
+        <div class="warning-icon">⚠️</div>
+        <h2>Confirmar Exclusão</h2>
+        <p>Tem certeza que deseja excluir esta tarefa?</p>
+        <div class="modal-actions">
+          <a id="confirm-delete" class="btn btn-danger">Sim, Excluir</a>
+          <a onclick="showPage('dashboard')" class="btn btn-secondary">Cancelar</a>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- TAREFA CRIADA -->
+  <template id="tarefa-criada">
+    <div class="app-layout">
+      <main class="main-content">
+        <header class="main-header"><h1>Tarefa Criada!</h1></header>
+        <section class="task-details-card">
+          <p class="success-message">✅ Sua tarefa foi criada com sucesso!</p>
+          <div class="task-actions">
+            <a onclick="showPage('dashboard')" class="btn btn-primary">Ver Tarefas</a>
+            <a onclick="showPage('criar-tarefa')" class="btn btn-secondary">Criar Outra</a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </template>
+
+  <!-- Script compartilhado (main.js) -->
+ 
+
 </body>
 </html>
