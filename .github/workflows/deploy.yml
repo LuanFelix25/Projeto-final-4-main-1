@@ -1,4 +1,4 @@
-name: Deploy Application
+Name: Deploy Application
 
 on:
   push:
@@ -8,6 +8,13 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    
+    # --- NOVO BLOCO DE PERMISSÕES ADICIONADO ---
+    permissions:
+      contents: write # Permissão de escrita para fazer commit/push
+      pages: write     # Permissão essencial para o GitHub Pages
+      id-token: write  # Recomendado para segurança moderna (OIDC)
+    # -------------------------------------------
 
     steps:
       - name: Checkout code
@@ -28,4 +35,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: ./dist 
